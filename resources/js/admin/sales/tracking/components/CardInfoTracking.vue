@@ -73,12 +73,13 @@
                             item-value="id"
                             item-text="full_name"
                             label="Seleccionar Cliente"
+                            :filter="customFilter"
                             outlined
                             required
                           >
                             <template v-slot:prepend-item>
                               <v-list dense color="grey lighten-3">
-                                <v-list-item>
+                                <v-list-item @click="dialogCreate = true">
                                   <v-list-item-content>
                                     <v-list-item-title />
                                     Registar Nuevo Cliente
@@ -248,12 +249,28 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
+
+    <dialog-component
+      :show="dialogCreate"
+      @close="dialogCreate = false"
+      closeable
+      :fullscreen="$vuetify.breakpoint.mobile"
+      :title="`Registrar Cliente`"
+      max-width="900"
+    >
+      <create-customer
+        @cancel="(dialogCreate = false), loadCustomers()"
+      ></create-customer>
+    </dialog-component>
   </v-card>
 </template>
 
 <script>
 import Assertiveness from "@admin/sales/tracking/resources/assertiveness.json";
+import CreateCustomer from "../../../customers/customers/Create.vue";
+import DialogComponent from "@admin/components/DialogComponent.vue";
 export default {
+  components: { CreateCustomer, DialogComponent },
   props: {
     info: {
       required: true,
@@ -268,6 +285,7 @@ export default {
       customer_dialog: false,
       customers: [],
       customer_id: null,
+      dialogCreate: false,
     };
   },
   computed: {
@@ -327,6 +345,21 @@ export default {
           // self.loadTrackings(() => {});
           // cb();
         });
+    },
+    customFilter(item, queryText, itemText) {
+      const words = queryText.toLowerCase().split(" ");
+
+      return words.every((word) => {
+        const nameMatch = item.full_name.toLowerCase().includes(word);
+        const rfcMatch = item.rfc
+          ? item.rfc.toLowerCase().includes(word)
+          : false;
+        // const categoryNameMatch = item.category.name
+        //   .toLowerCase()
+        //   .includes(word);
+
+        return nameMatch || rfcMatch;
+      });
     },
   },
 };

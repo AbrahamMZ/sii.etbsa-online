@@ -3,6 +3,7 @@
 namespace App\Components\Customers\Models;
 
 use App\Components\Common\Models\Township;
+use App\Components\Tracking\Models\Prospect;
 use Illuminate\Database\Eloquent\Model;
 use Kodeine\Metable\Metable;
 
@@ -39,6 +40,10 @@ class Customers extends Model
     public function township()
     {
         return $this->belongsTo(Township::class, 'town_id');
+    }
+
+    public function prospects(){
+        return $this->hasMany(Prospect::class, 'customer_id');
     }
 
 
