@@ -2,7 +2,9 @@
   <v-data-table :headers="headers" :items="items" hide-default-footer dense>
     <template v-slot:top>
       <v-toolbar flat>
-        <v-toolbar-title> Cotizaciones del Seguimiento </v-toolbar-title>
+        <v-toolbar-title>
+          Cotizaciones del Seguimiento #{{ TrackingId }}</v-toolbar-title
+        >
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" class="overflow-auto" persistent fullscreen>
           <template v-slot:activator="{ on, attrs }">
@@ -38,7 +40,7 @@
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">
-              Seguro en eliminar Cotizacion?
+              La Cotizacion Se marcara como Perdida.
             </v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
@@ -46,6 +48,24 @@
                 Cancel
               </v-btn>
               <v-btn color="blue darken-1" text @click="deleteItemConfirm">
+                OK
+              </v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="dialogWonQuote" max-width="600px">
+          <v-card>
+            <v-card-title class="text-h5"> Crear Pedido </v-card-title>
+            <v-card-text>
+              La Cotizacion de Marcara como Ganada, y Se creara un Pedido.
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" dark @click="closeWon">
+                Cancel
+              </v-btn>
+              <v-btn color="blue darken-1" text @click="wonItemConfirm">
                 OK
               </v-btn>
               <v-spacer></v-spacer>
@@ -76,8 +96,15 @@
       >
         <v-icon small> mdi-printer </v-icon>
       </v-btn>
-      <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
-      <v-icon small color="red" @click="deleteItem(item)"> mdi-delete </v-icon>
+      <template v-if="item.estatus.key == 'activo'">
+        <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
+        <v-icon small color="red" @click="deleteItem(item)">
+          mdi-delete
+        </v-icon>
+      </template>
+      <v-btn icon color="green" class="ml-2" right @click="wonQuote(item)" dark>
+        <v-icon small> mdi-file-document </v-icon>
+      </v-btn>
     </template>
   </v-data-table>
 </template>
@@ -95,6 +122,7 @@ export default {
     renderComponent: true,
     dialog: false,
     dialogDelete: false,
+    dialogWonQuote: false,
     headers: [
       {
         text: "Folio",
@@ -102,12 +130,18 @@ export default {
         sortable: false,
         value: "id",
       },
+      {
+        text: "Estatus",
+        align: "start",
+        sortable: false,
+        value: "estatus.title",
+      },
       { text: "Condicion de Pago", value: "label_payment" },
       { text: "Total", value: "total" },
       { text: "Num. Partidas", value: "products", align: "center" },
       { text: "F. Creacion", value: "updated_at", align: "end" },
       { text: "F. Vencimiento", value: "date_due", align: "end" },
-      { text: "Actions", value: "actions", sortable: false },
+      { text: "Actions", value: "actions", align: "end", sortable: false },
     ],
     items: [],
     editedIndex: -1,
@@ -149,6 +183,9 @@ export default {
     },
     dialogDelete(val) {
       val || this.closeDelete();
+    },
+    dialogWonQuote(val) {
+      val || this.closeWon();
     },
   },
 
@@ -210,6 +247,11 @@ export default {
       // this.editedItem = Object.assign({}, item);
       this.dialogDelete = true;
     },
+    wonQuote(item) {
+      this.editedIndex = item.id;
+      // this.editedItem = Object.assign({}, item);
+      this.dialogWonQuote = true;
+    },
 
     async deleteItemConfirm() {
       const _this = this;
@@ -241,6 +283,38 @@ export default {
 
       _this.closeDelete();
     },
+    async wonItemConfirm() {
+      const _this = this;
+
+      console.log(_this.editedIndex);
+      // await axios
+      //   .delete(`/admin/quotes/${_this.editedIndex}`)
+      //   .then((response) => {
+      //     _this.$store.commit("showSnackbar", {
+      //       message: response.data.message,
+      //       color: "error",
+      //       duration: 3000,
+      //     });
+      //     _this.$eventBus.$emit("DELETE_QUOTE");
+      //   })
+      //   .catch(function (error) {
+      //     _this.$store.commit("hideLoader");
+
+      //     if (error.response) {
+      //       _this.$store.commit("showSnackbar", {
+      //         message: error.response.data.message,
+      //         color: "error",
+      //         duration: 3000,
+      //       });
+      //     } else if (error.request) {
+      //       console.log(error.request);
+      //     } else {
+      //       console.log("Error", error.message);
+      //     }
+      //   });
+
+      _this.closeWon();
+    },
 
     close() {
       this.$nextTick(() => {
@@ -256,6 +330,13 @@ export default {
         this.editedIndex = -1;
       });
       this.dialogDelete = false;
+    },
+    closeWon() {
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.editedItemDefault);
+        this.editedIndex = -1;
+      });
+      this.dialogWonQuote = false;
     },
 
     async save() {

@@ -3,6 +3,7 @@
 namespace App\Components\Tracking\Models;
 
 use App\Components\Common\Models\Currency;
+use App\Components\Common\Models\Estatus;
 use App\Components\Product\Models\Product;
 use App\Components\Product\Models\ProductCategory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,7 @@ class TrackingQuote extends Model
         'total',
         'payment_condition',
         'observation',
+        'estatus_id',
     ];
     protected $appends = ['label_payment'];
 
@@ -42,6 +44,11 @@ class TrackingQuote extends Model
     public function category()
     {
         return $this->belongsTo(ProductCategory::class, 'category_id');
+    }
+
+    public function estatus()
+    {
+        return $this->belongsTo(Estatus::class, 'estatus_id');
     }
 
 

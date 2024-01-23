@@ -53,6 +53,7 @@ class TrackingQuoteController extends AdminController
 
     public function store(Request $request)
     {
+
         $validate = validator($request->all(), []);
 
         if ($validate->fails()) {
