@@ -40,17 +40,70 @@ class SinglePageController extends AdminController
                 'permission_requirements' => [],
                 'label' => 'Flujo Efectivo',
                 'nav_type' => MenuItem::$NAV_TYPE_NAV,
-                'icon' => 'mdi-crosshairs-gps',  
+                'icon' => 'mdi-crosshairs-gps',
                 'visible' => true,
                 'children' => [
                     new MenuItem([
                         'group_requirements' => ['Super User'],
                         'permission_requirements' => [],
-                        'label' => 'Polizas',
+                        'label' => 'Caja',
                         'nav_type' => MenuItem::$NAV_TYPE_NAV,
-                        'icon' => 'mdi-car-info',
+                        'icon' => 'mdi-cash-register',
+                        'visible' => true,
+                        'children' => [
+                            new MenuItem([
+                                'group_requirements' => ['Super User'],
+                                'permission_requirements' => [],
+                                'label' => 'Registrar Ingreso',
+                                'nav_type' => MenuItem::$NAV_TYPE_NAV,
+                                'icon' => 'mdi-cash-plus',
+                                'route_type' => 'vue',
+                                'route_name' => 'poliza.ingresos.create',
+                                'visible' => true,
+                            ]),
+                            new MenuItem([
+                                'group_requirements' => ['Super User'],
+                                'permission_requirements' => [],
+                                'label' => 'Caja (Ingresos)',
+                                'nav_type' => MenuItem::$NAV_TYPE_NAV,
+                                'icon' => 'mdi-bank-transfer-in',
+                                'route_type' => 'vue',
+                                'route_name' => 'poliza.ingresos.list',
+                                'visible' => true,
+
+                            ]),
+                            new MenuItem([
+                                'group_requirements' => ['Super User'],
+                                'permission_requirements' => [],
+                                'label' => 'No Identificados',
+                                'nav_type' => MenuItem::$NAV_TYPE_NAV,
+                                'icon' => 'mdi-information',
+                                'route_type' => 'vue',
+                                'route_name' => 'poliza.ingresos.unidentified',
+                                'visible' => true,
+                            ]),
+
+                        ]
+                    ]),
+
+                    new MenuItem([
+                        'group_requirements' => ['Super User'],
+                        'permission_requirements' => [],
+                        'label' => 'Egresos',
+                        'nav_type' => MenuItem::$NAV_TYPE_NAV,
+                        'icon' => 'mdi-bank-minus',
                         'route_type' => 'vue',
-                        'route_name' => 'poliza.ingresos.list',
+                        'route_name' => 'poliza.egresos.list',
+                        'visible' => true,
+                    ]),
+                    new MenuItem([
+                        'group_requirements' => ['Super User'],
+                        'permission_requirements' => [],
+                        'label' => 'Tranferencias',
+                        'nav_type' => MenuItem::$NAV_TYPE_NAV,
+                        'icon' => 'mdi-bank-transfer',
+                        'route_type' => 'vue',
+                        'route_name' => 'poliza.tranferencias.list',
                         'visible' => true,
                     ]),
                     new MenuItem([
@@ -58,7 +111,7 @@ class SinglePageController extends AdminController
                         'permission_requirements' => [],
                         'label' => 'Cuentas Sucursales',
                         'nav_type' => MenuItem::$NAV_TYPE_NAV,
-                        'icon' => 'mdi-car-info',
+                        'icon' => 'mdi-bank',
                         'route_type' => 'vue',
                         'route_name' => 'cuentas.agencias',
                         'visible' => true,
@@ -316,7 +369,7 @@ class SinglePageController extends AdminController
                 'visible' => true,
                 'children' => [
                     new MenuItem([
-                        'group_requirements' => ['Super User'],
+                        'group_requirements' => [],
                         'permission_requirements' => [],
                         'label' => 'Historico Ventas',
                         'nav_type' => MenuItem::$NAV_TYPE_NAV,
@@ -326,7 +379,7 @@ class SinglePageController extends AdminController
                         'visible' => false,
                     ]),
                     new MenuItem([
-                        'group_requirements' => ['Super User'],
+                        'group_requirements' => [],
                         'permission_requirements' => [],
                         'label' => 'Ventas Clientes',
                         'nav_type' => MenuItem::$NAV_TYPE_NAV,

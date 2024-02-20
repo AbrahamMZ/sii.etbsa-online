@@ -3,6 +3,7 @@
 namespace App\Components\Customers\Models;
 
 use App\Components\Common\Models\Township;
+use App\Components\Tracking\Models\Prospect;
 use Illuminate\Database\Eloquent\Model;
 use Kodeine\Metable\Metable;
 
@@ -41,13 +42,18 @@ class Customers extends Model
         return $this->belongsTo(Township::class, 'town_id');
     }
 
+    public function contacts()
+    {
+        $this->hasMany(Prospect::class, 'customer_id', 'id');
+    }
+
 
     public function getPathDocumentsAttribute()
     {
-        return trim(str_replace('  ', ' ',  "/clientes/{$this->id}/"));
+        return trim(str_replace('  ', ' ', "/clientes/{$this->id}/"));
     }
 
-    public function scopeSearch($query, String $search)
+    public function scopeSearch($query, string $search)
     {
         $query->when($search ?? null, function ($query, $search) {
             $query->where(function ($query) use ($search) {

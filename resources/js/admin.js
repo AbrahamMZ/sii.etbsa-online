@@ -9,7 +9,7 @@ import router from "~/router";
 import VueProgressBar from "vue-progressbar";
 import PortalVue from "portal-vue";
 import Gate from "~/common/Gate";
-import { VueMaskDirective } from "v-mask";
+import VueMask from 'v-mask'
 
 import store from "~/common/Store";
 import eventBus from "~/common/Event";
@@ -88,7 +88,7 @@ Vue.component(
   require("@chrisheanan/vue-gauge/src/components/Gauge.vue").default
 );
 
-Vue.directive("mask", VueMaskDirective);
+Vue.use(VueMask);
 Vue.filter("money", (value, type = "MXN") =>
   new Intl.NumberFormat("es-MX", {
     style: "currency",

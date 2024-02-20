@@ -72,7 +72,6 @@ class SalesCustomerHistoryController extends AdminController
         // ->orderByRaw("strftime('%Y', fa.`FECHA FACTURA`)");
 
 
-
         $query->when($filters['clave_cliente'] ?? null, function ($query, $clave_cliente) {
             $query->where(function ($q) use ($clave_cliente) {
                 if (is_array($clave_cliente)) {
@@ -113,6 +112,17 @@ class SalesCustomerHistoryController extends AdminController
                     ->orWhere('cv.MODELO', 'LIKE', "%{$search}%");
             });
         });
+
+
+        // Permiso de Sucursal
+        $query->when(
+            auth()->user()->inGroup('Gerente') ?? null,
+            function ($query) {
+                $query->whereIn('ID_SUC', auth()->user()->seller_agency->pluck('code'));
+            }
+        );
+
+
 
         if ($request['per_page'] == -1) {
             $request['per_page'] = 999999;

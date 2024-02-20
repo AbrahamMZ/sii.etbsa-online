@@ -282,9 +282,19 @@
             clearable
             dense
           />
-          <v-btn icon @click="cleanFilter">
+          <v-btn icon @click="cleanFilter" class="mr-2">
             <v-icon color="red">mdi-filter-remove-outline</v-icon>
           </v-btn>
+          <!-- <v-btn
+            class="mr-2"
+            @click="exportToCsv('sales_customers.xlsx', items)"
+            color="grey"
+            dark
+
+          >
+            Exportar
+            <v-icon right color="green">mdi-file-excel</v-icon>
+          </v-btn> -->
           <v-btn @click="searchBtn()" dark>
             Buscar
             <v-icon right color="blue">mdi-magnify</v-icon>
@@ -1082,6 +1092,33 @@ export default {
           this.selectedFruits = this.fruits.slice();
         }
       });
+    },
+
+    exportToCsv(fileName, data) {
+      // Crear un libro de trabajo
+      var workbook = XLSX.utils.book_new();
+      var sheetName = "Datos"; // Nombre de la hoja
+
+      // Convertir los datos a una hoja de trabajo
+      var worksheet = XLSX.utils.json_to_sheet(data);
+
+      // Agregar la hoja de trabajo al libro de trabajo
+      XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+
+      // Generar un archivo Excel (xlsx)
+      var excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+
+      // Convertir el buffer a un blob
+      var blob = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      // Descargar el archivo Excel
+      // var fileName = "datos.xlsx"; // Nombre del archivo
+      saveAs(blob, fileName);
     },
   },
 };

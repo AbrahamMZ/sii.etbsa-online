@@ -19,7 +19,7 @@
           <slot name="actions"></slot>
         </v-toolbar-items>
       </v-toolbar>
-      <v-card-text class="pa-2">
+      <v-card-text class="pt-6">
         <slot></slot>
       </v-card-text>
       <div style="flex: 1 1 auto"></div>

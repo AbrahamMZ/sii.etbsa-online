@@ -10,14 +10,16 @@
       <v-col cols="12">
         <v-text-field
           v-model="form.full_name"
-          label="Nombre"
-          hint="es requerido"
+          label="Denominacion / Razon Social:"
+          hint="Debe se al de la Contancia de Situacion Fiscal"
+          persistent-hint
+          :rules="[(v) => !!v || 'El Nombre es requerido']"
           outlined
           dense
         >
         </v-text-field>
       </v-col>
-      <v-col cols="12">
+      <!-- <v-col cols="12">
         <v-text-field
           v-model="form.company"
           label="Compañia/Razon Social"
@@ -26,7 +28,7 @@
           dense
         >
         </v-text-field>
-      </v-col>
+      </v-col> -->
 
       <v-col cols="6">
         <v-text-field
@@ -48,7 +50,7 @@
         >
         </v-text-field>
       </v-col>
-      <v-col cols="12">
+      <!-- <v-col cols="12">
         <v-menu
           ref="menu"
           v-model="menu"
@@ -81,7 +83,7 @@
             @change="save"
           ></v-date-picker>
         </v-menu>
-      </v-col>
+      </v-col> -->
       <v-col cols="6">
         <v-text-field
           v-model="form.phone"
@@ -156,7 +158,6 @@
           v-model="form.rating"
           :items="['AAA', 'AA', 'A', 'Lista Negra']"
           label="Calificacion"
-          :rules="[(v) => !!v || 'Es Requerido']"
           outlined
           filled
           dense

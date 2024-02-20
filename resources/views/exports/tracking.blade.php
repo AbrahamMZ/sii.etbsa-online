@@ -6,6 +6,7 @@
             <th>Compañia</th>
             <th>Tel. Prospecto</th>
             <th>Email. Prospecto</th>
+            <th>Domicilio</th>
             <th>Municipio</th>
             <th>Estado</th>
             <th>Categoria</th>
@@ -35,6 +36,7 @@
                 <td>{{ $item->prospect->company ?? '' }}</td>
                 <td>{{ $item->prospect->phone }}</td>
                 <td>{{ $item->prospect->email ?? '' }}</td>
+                <td>{{ $item->prospect->town ?? '' }}</td>
                 <td>{{ $item->prospect->township->name ?? '' }}</td>
                 <td>{{ $item->prospect->township->estate->name ?? '' }}</td>
                 <td>{{ $item->title ?? 'S/A' }}</td>

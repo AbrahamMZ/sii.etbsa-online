@@ -41,6 +41,7 @@ Route::prefix('admin')->namespace('Admin')->middleware(['auth'])->group(function
     Route::resource('file-groups', 'FileGroupController');
 
     Route::resource('prospects', 'ProspectController');
+    Route::get('options/prospects', 'ProspectController@options');
 
     // catalogo ClavesProductServSat
     Route::get('claveProdSat', 'CClaveProdServController@index')->name('cProductServSat.index');

@@ -1,25 +1,22 @@
 <template>
   <v-card flat>
-    <v-container fluid class="pt-0">
-      <!-- <v-card-title>Resgistrar nuevo cliente</v-card-title> -->
-      <v-card-text>
-        <form-customer
-          ref="FormCustomer"
-          :value="valid"
-          :form.sync="form"
-        ></form-customer>
-      </v-card-text>
-      <v-card-actions class="justify-center">
-        <v-row dense>
-          <v-col cols="6">
-            <v-btn color="green" block @click="submit">Guardar</v-btn>
-          </v-col>
-          <v-col cols="6">
-            <v-btn text block @click="$emit('cancel')">Cancelar</v-btn>
-          </v-col>
-        </v-row>
-      </v-card-actions>
-    </v-container>
+    <v-card-text>
+      <form-customer
+        ref="FormCustomer"
+        :value="valid"
+        :form.sync="form"
+      ></form-customer>
+    </v-card-text>
+    <v-card-actions class="justify-center">
+      <v-row dense>
+        <v-col cols="6">
+          <v-btn color="green" dark block @click="submit">Guardar</v-btn>
+        </v-col>
+        <v-col cols="6">
+          <v-btn text block @click="$emit('cancel')">Cancelar</v-btn>
+        </v-col>
+      </v-row>
+    </v-card-actions>
   </v-card>
 </template>
 <script>
@@ -44,6 +41,7 @@ export default {
         code_postal: "",
         town_id: "",
         number_customer: "",
+        rating: "A",
         is_moral: false,
       },
     };

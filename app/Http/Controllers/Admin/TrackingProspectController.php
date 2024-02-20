@@ -226,8 +226,8 @@ class TrackingProspectController extends AdminController
             'assigned_by' => $tracking->assigned->name,
             'registered_by' => $tracking->registered->name,
             'estatus' => $tracking->estatus->only('id', 'title', 'key'),
-            'prospect' => $tracking->prospect()->with('township')->first()
-                ->only('full_name', 'email', 'is_moral', 'company', 'rfc', 'town', 'phone', 'township'),
+            'prospect' => $tracking->prospect()->with('township','customer:id,full_name')->first()
+                ->only('id','full_name', 'email', 'is_moral', 'customer','customer_id','company', 'rfc', 'town', 'phone', 'township'),
             'customer' => $tracking->customer,
             'historical' => $tracking->historical->map(function ($H) {
                 return [
@@ -441,7 +441,7 @@ class TrackingProspectController extends AdminController
 
     public function print(TrackingProspect $trackingProspect)
     {
-        $data = $trackingProspect->load('prospect', 'assigned');
+        $data = $trackingProspect->load('prospect','prospect.township', 'assigned');
         $pdf = \PDF::loadView('pdf.quote', compact('data'));
         return $pdf->stream();
     }

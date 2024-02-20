@@ -156,9 +156,7 @@
             </v-expansion-panel-header>
             <v-expansion-panel-content class="px-0">
               <v-list subheader two-line dense flat>
-                <v-subheader inset>
-                  Requisitos del Proveedor
-                </v-subheader>
+                <v-subheader inset> Requisitos del Proveedor </v-subheader>
                 <supplier-documents-list
                   :documentsList.sync="form.documents"
                 ></supplier-documents-list>
@@ -173,12 +171,13 @@
               <v-card-text class="px-0 pb-0">
                 <v-row class="caption text-uppercase" dense>
                   <v-col cols="12">
-                    <v-text-field
+                    <v-select
                       v-model="form.billing_data.bank"
                       label="Nombre del Banco:"
+                      :items="itemsBanks"
                       outlined
                       dense
-                    ></v-text-field>
+                    ></v-select>
                   </v-col>
                   <v-col cols="12">
                     <v-text-field
@@ -225,15 +224,9 @@
                 <template v-slot:default>
                   <thead>
                     <tr>
-                      <th class="text-left">
-                        Nombre
-                      </th>
-                      <th class="text-left">
-                        Telefono
-                      </th>
-                      <th class="text-left">
-                        Email
-                      </th>
+                      <th class="text-left">Nombre</th>
+                      <th class="text-left">Telefono</th>
+                      <th class="text-left">Email</th>
                       <th class="text-left"></th>
                     </tr>
                   </thead>
@@ -242,7 +235,7 @@
                       <td class="caption">{{ item.name }}</td>
                       <td class="caption">{{ item.phone }}</td>
                       <td class="caption">{{ item.email }}</td>
-                      <td class="text-right" style="width: 50px;">
+                      <td class="text-right" style="width: 50px">
                         <v-icon color="red" small @click="deleteContact(index)">
                           mdi-delete
                         </v-icon>
@@ -266,7 +259,6 @@
                     <v-text-field
                       v-model="contact.phone"
                       label="Telefono (obligatorio)"
-                     
                       placeholder="(###)###-##-## Ext: ###"
                       hint="Numero 10 digitos"
                       :rules="[(v) => !!v || 'Es Requerido']"
@@ -328,7 +320,8 @@ export default {
         required: (value) => !!value || "Requerido.",
         counter: (value) => value.length >= 10 || "Min 10 caracteres",
         email: (value) => {
-          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          const pattern =
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
           return pattern.test(value) || "Email Invalido.";
         },
       },
@@ -341,6 +334,40 @@ export default {
         "Productos Limpieza",
         "Gorras",
         "Botas",
+      ],
+      itemsBanks: [
+        "ABC Capital",
+        "Banca Afirme",
+        "Banca Mifel",
+        "Banco Actinver",
+        "Banco Autofin México",
+        "Banco Azteca",
+        "Banco Bancrea",
+        "Banco Bineo",
+        "Banco Covalto",
+        "Banco Compartamos",
+        "Banco Covalto",
+        "Banco Credit Suisse (México)",
+        "Banco de Inversión Afirme",
+        "Banco del Bajío",
+        "Banco Forjadores",
+        "Banco Inbursa",
+        "Banco Invex",
+        "Banco Multiva",
+        "Banco Regional de Monterrey",
+        "Banco Santander",
+        "Banco Ve por Más",
+        "BanCoppel",
+        "Banorte",
+        "BBVA México",
+        "BNP Paribas",
+        "Citibanamex",
+        "CIBanco",
+        "Consubanco",
+        "HSBC México",
+        "Intercam Banco",
+        "MUFG Bank Mexico",
+        "Scotiabank",
       ],
     };
   },

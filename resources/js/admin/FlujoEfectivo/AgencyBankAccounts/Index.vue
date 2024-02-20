@@ -6,7 +6,13 @@
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
 
-        <v-text-field label="Buscar" class="mr-1" hide-details outlined dense></v-text-field>
+        <v-text-field
+          label="Buscar"
+          class="mr-1"
+          hide-details
+          outlined
+          dense
+        ></v-text-field>
 
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ on, attrs }">
@@ -82,8 +88,16 @@
           </v-card>
         </v-dialog>
 
-        <v-btn color="accent" class="ml-2" @click="initialize" dark> Actualizar </v-btn>
+        <v-btn color="accent" class="ml-2" @click="initialize" dark>
+          Actualizar
+        </v-btn>
       </v-toolbar>
+    </template>
+    <template v-slot:[`item.income_balance`]="{ value }">
+      {{ value | money }}
+    </template>
+    <template v-slot:[`item.balance`]="{ value }">
+      {{ value | money }}
     </template>
     <template v-slot:[`item.actions`]="{ item }">
       <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
@@ -109,6 +123,7 @@ export default {
         value: "agency.title",
       },
       { text: "Numero Cuenta", value: "account_number" },
+      { text: "Balance Ingreso", value: "income_balance" },
       { text: "Balance", value: "balance" },
       { text: "Actions", value: "actions", sortable: false },
     ],
@@ -191,7 +206,7 @@ export default {
     async deleteItemConfirm() {
       const _this = this;
       // try {
-        await axios.delete(`/admin/agency-bank-accounts/${_this.editedIndex}`);
+      await axios.delete(`/admin/agency-bank-accounts/${_this.editedIndex}`);
       // } catch (error) {}
       this.closeDelete();
       this.initialize();
@@ -203,7 +218,6 @@ export default {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
       });
-      
     },
 
     closeDelete() {

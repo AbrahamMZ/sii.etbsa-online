@@ -2,7 +2,6 @@
 /public/hot
 /public/storage
 /storage/*.key
-/database/EquopDB.db3
 /vendor
 /.idea
 /.vagrant

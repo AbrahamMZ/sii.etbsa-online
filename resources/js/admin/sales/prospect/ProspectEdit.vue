@@ -65,6 +65,7 @@ export default {
           _this.form = {
             ...prospect,
             estate_id: estate_id,
+            cultivos:prospect.meta_data?.cultivos
           };
         });
     },

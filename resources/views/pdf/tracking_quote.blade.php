@@ -314,13 +314,14 @@
 
                             <tr class="heading">
                                 <td>
-                                    Atencion A: <br />
-                                    <br>
+                                    Atencion a: <br />
+                                    Domicilio:<br>
                                     Telefono:
                                 </td>
                                 <td style="text-align: left;">
                                     <b>{{ $data->tracking->prospect->full_name }}</b><br />
-                                    {{ $data->tracking->prospect->company }} <br>
+                                    {{ $data->tracking->prospect->town }}, {{ $data->tracking->prospect->township->estate->name }}, {{ $data->tracking->prospect->township->name }}
+                                    <br>
                                     <b>{{ $data->tracking->prospect->phone }}</b>
                                 </td>
 

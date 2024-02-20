@@ -36,7 +36,12 @@ class CustomersController extends AdminController
     public function store(Request $request)
     {
         $request['created_by'] = Auth::user()->id;
-        $validate = validator($request->all(), []);
+        $validate = validator($request->all(), [
+            'full_name' => 'required|unique:customers,full_name',
+        ], [
+            'full_name.unique' => 'Nombre de Cliente ya se encuentra registrado',
+            'full_name.required' => 'El Nombre es requerido',
+        ]);
         if ($validate->fails()) {
             return $this->sendResponseBadRequest($validate->errors()->first());
         }
@@ -50,7 +55,6 @@ class CustomersController extends AdminController
     /**
      * Display the specified resource.
      *
-     * @param  \App\Vehicle  $vehicle
      * @return \Illuminate\Http\Response
      */
     public function show(Customers $customer)

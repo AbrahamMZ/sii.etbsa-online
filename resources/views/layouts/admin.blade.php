@@ -14,6 +14,12 @@
     <!-- admin.css here -->
     <link href="{{ asset('css/admin.css') }}" rel="stylesheet" />
 
+    <!-- Importa SheetJS y FileSaver.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.0/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
+
+
+
     <!-- app js values -->
     <script type="application/javascript">
         var LSK_APP = {};
