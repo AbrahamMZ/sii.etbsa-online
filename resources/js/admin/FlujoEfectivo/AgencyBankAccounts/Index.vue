@@ -1,5 +1,4 @@
 <template>
-  <div>
     <v-data-table :headers="headers" :items="items" class="elevation-1" dense>
       <template v-slot:top>
         <v-toolbar flat class="align-center">
@@ -115,7 +114,6 @@ export default {
         value: "agency.title",
       },
       { text: "Numero Cuenta", value: "account_number" },
-      { text: "Balance Ingreso", value: "income_balance" },
       { text: "Balance", value: "balance" },
       { text: "Saldo Polizas", value: "calculo" },
       { text: "Actions", value: "actions", sortable: false },
