@@ -16,7 +16,8 @@ class BankPolicyController extends AdminController
      */
     public function index()
     {
-        $bank_policies = BankPolicy::with('agencyBankAccount','currency')->get();
+
+        $bank_policies = BankPolicy::with('agencyBankAccount', 'currency')->get();
         $options['agency_bank_accounts'] = AgencyBankAccount::with('agency:id,title')->get(['id', 'bank_name', 'account_number', 'agency_id']);
         $options['currencies'] = Currency::all('id', 'name');
         $options['payment_source'] = ['Cheque', 'Tranferencia', 'Efectivo'];

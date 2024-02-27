@@ -17,9 +17,36 @@ class AgencyBankAccountController extends AdminController
     public function index()
     {
         //
+        // \DB::raw('SUM(polizas.amount) as total_amount')
+
+        // $polizasPorTipo = \DB::table('agency_bank_accounts')
+        //     ->join('polizas', 'agency_bank_accounts.id', '=', 'polizas.apply_bank_accounts_id')
+        //     ->select('agency_bank_accounts.id', 'polizas.tipo_poliza_id','polizas.id as poliza_id')
+        //     ->groupBy('agency_bank_accounts.id', 'polizas.tipo_poliza_id','polizas.id')
+        //     ->get();
+
+        $polizasPorTipo = \DB::table('agency_bank_accounts')
+            ->join('polizas', 'agency_bank_accounts.id', '=', 'polizas.apply_bank_accounts_id')
+            ->select('agency_bank_accounts.id', 'polizas.tipo_poliza_id', 'polizas.id as poliza_id')
+            ->groupBy('agency_bank_accounts.id', 'polizas.tipo_poliza_id','polizas.id')
+            ->get();
+
+        // Organizar los resultados en un array bidimensional
+        $tablaPolizas = [];
+        foreach ($polizasPorTipo as $poliza) {
+            $cuentaId = $poliza->id;
+            $tipoPolizaId = $poliza->tipo_poliza_id;
+            $polizaId = $poliza->poliza_id;
+
+            // Agregar la póliza a la fila correspondiente en la tabla
+            $tablaPolizas[$tipoPolizaId][$cuentaId] = $polizaId;
+        }
+
+        // return compact('polizasPorTipo','tablaPolizas');
+
         $accounts = AgencyBankAccount::with('agency:id,title')->get();
         $options['agencies'] = Agency::all('id', 'title', 'code');
-        return $this->sendResponse(compact('accounts', 'options'), 'cuentas de Sucursales');
+        return $this->sendResponse(compact('accounts', 'options','tablaPolizas','polizasPorTipo'), 'cuentas de Sucursales');
     }
 
     /**

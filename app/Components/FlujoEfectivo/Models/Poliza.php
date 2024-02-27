@@ -99,7 +99,65 @@ class Poliza extends Model
                     ->orWhere('category_id', '');
             });
     }
+    public function scopeIdentified($query)
+    {
+        return $query->where(function ($query) {
+            $query->whereNotNull('reference_number')
+                ->where('reference_number', '!=', '');
+        })
+            ->where(function ($query) {
+                $query->whereNotNull('reference_name')
+                    ->where('reference_name', '!=', '');
+            })
+            ->where(function ($query) {
+                $query->whereNotNull('reference_concept')
+                    ->where('reference_concept', '!=', '');
+            })
+            ->where(function ($query) {
+                $query->whereNotNull('category_id')
+                    ->where('category_id', '!=', '');
+            });
+    }
 
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['tipo_poliza'] ?? null, function ($query, $tipo_poliza) {
+            $query->whereHas('tipoPoliza', function ($query) use ($tipo_poliza) {
+                return $query->where('key', $tipo_poliza);
+            });
+        })->when($filters['payment_sources'] ?? null, function ($query, $payment_sources) {
+            $query->whereHas('PaymentSource', function ($query) use ($payment_sources) {
+                return $query->whereIn('id', $payment_sources);
+            });
+        });
+    }
+
+    public function scopeIngresos($query)
+    {
+        return $query->where('tipo_poliza_id', 1);
+    }
+    public function scopeEgresos($query)
+    {
+        return $query->where('tipo_poliza_id', 2);
+    }
+    public function scopeTransferencias($query)
+    {
+        return $query->where('tipo_poliza_id', 3);
+    }
+
+    public function scopeFilterPermission($query, User $user)
+    {
+        $query->when($user->hasPermission('caja.admin'),
+            function ($query) {
+                return $query;
+            },
+            function ($query) use ($user) {
+                $query->when($user->inGroup('Flujo Efectivo') ?? null, function ($query) use ($user) {
+                    $query->where('user_created', $user->id);
+                });
+            }
+        );
+    }
 
 
 }

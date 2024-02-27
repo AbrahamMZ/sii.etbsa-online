@@ -238,7 +238,7 @@ class TrackingProspect extends Model
 
     public function getAmountAttribute()
     {
-        return $this->price * $this->exchange_value;
+        return  $this->currency_id == 1 ?  $this->price :  $this->price * $this->exchange_value;
     }
     // public function getFilesAttribute()
     // {

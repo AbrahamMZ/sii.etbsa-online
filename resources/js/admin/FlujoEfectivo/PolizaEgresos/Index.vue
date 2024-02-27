@@ -4,6 +4,9 @@
     :items="items"
     :options.sync="pagination"
     :server-items-length="totalItems"
+    show-expand
+    single-expand
+    :expanded.sync="expanded"
     class="elevation-3 text-uppercase font-weight-bold"
     dense
   >
@@ -24,7 +27,7 @@
         <v-dialog v-model="dialog" max-width="600px">
           <template v-slot:activator="{ on, attrs }">
             <v-btn color="primary" dark v-bind="attrs" v-on="on">
-              Registrar Ingreso
+              Registrar {{ propTipoPoliza }}
             </v-btn>
           </template>
           <v-card>
@@ -92,7 +95,7 @@
                   <v-col cols="12">
                     <v-text-field
                       v-model="editedItem.reference_number"
-                      label="Numero Cliente"
+                      label="Numero Proveedor"
                       persistent-hint
                       outlined
                       dense
@@ -101,7 +104,7 @@
                   <v-col cols="12">
                     <v-text-field
                       v-model="editedItem.reference_name"
-                      label="Nombre Cliente"
+                      label="Nombre Proveedor"
                       persistent-hint
                       outlined
                       dense
@@ -153,6 +156,40 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+        <v-dialog v-model="dialogApply" max-width="500px">
+          <v-card>
+            <v-card-title class="text-h5">
+              Seguro en aplicar la Poliza?
+            </v-card-title>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="closeApply">
+                Cancel
+              </v-btn>
+              <v-btn color="blue darken-1" text @click="applyItemConfirm">
+                OK
+              </v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="dialogUnapply" max-width="500px">
+          <v-card>
+            <v-card-title class="text-h5">
+              Seguro en Desaplicar la Poliza?
+            </v-card-title>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="closeUnapply">
+                Cancel
+              </v-btn>
+              <v-btn color="blue darken-1" text @click="unapplyItemConfirm">
+                OK
+              </v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
 
         <v-btn color="accent" class="ml-2" @click="initialize" dark>
           Actualizar
@@ -162,14 +199,17 @@
     <template v-slot:[`item.amount`]="{ item, value }">
       {{ value | money }} - {{ item?.currency?.name }}
     </template>
+
+    <template v-slot:[`item.created_at`]="{ value }">
+      {{ $appFormatters.formatDate(value) }}
+    </template>
     <template v-slot:[`item.is_applied`]="{ item, value }">
-      <v-icon :color="value ? 'primary' : 'grey'" @click="deleteItem(item)">
+      <v-icon
+        :color="value ? 'primary' : 'grey'"
+        @click="value ? unapplyItem(item) : applyItem(item)"
+      >
         mdi-check-circle
       </v-icon>
-    </template>
-  
-    <template v-slot:[`item.created_at`]="{ value }">
-      {{ $appFormatters.formatDate(value, "L") }}
     </template>
     <template v-slot:[`item.actions`]="{ item }">
       <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
@@ -177,6 +217,44 @@
     </template>
     <template v-slot:no-data>
       <v-btn color="primary" class="ml-1" @click="initialize"> Reset </v-btn>
+    </template>
+
+    <template v-slot:expanded-item="{ headers, item }">
+      <td :colspan="headers.length" class="pa-0">
+        <v-simple-table dense fixed-header class="text-subtitle-2" dark>
+          <template v-slot:default>
+            <tbody>
+              <tr>
+                <td>Proveedor Numero:</td>
+                <td>{{ item.reference_number }}</td>
+              </tr>
+              <tr>
+                <td>Proveedor Nombre:</td>
+                <td>{{ item.reference_name }}</td>
+              </tr>
+              <tr>
+                <td>Referencia:</td>
+                <td>{{ item.reference_concept }}</td>
+              </tr>
+              <tr>
+                <td>Descripcion:</td>
+                <td>{{ item.description }}</td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
+      </td>
+      <!-- <td colspan="4">
+        <v-textarea
+          filled
+          label="Notas"
+          rows="2"
+          shaped
+          counter="200"
+          no-resize
+          class="pt-2"
+        ></v-textarea>
+      </td> -->
     </template>
   </v-data-table>
 </template>
@@ -186,7 +264,10 @@ export default {
   props: ["propTipoPoliza"],
   data: () => ({
     dialog: false,
+    expanded: [],
     dialogDelete: false,
+    dialogApply: false,
+    dialogUnapply: false,
     headers: [
       {
         text: "Cuenta Afectada",
@@ -200,7 +281,7 @@ export default {
       { text: "Fecha Registro", value: "created_at" },
       { text: "Usuario Registro", value: "created_user.name" },
       { text: "Aplicado", value: "is_applied" },
-      
+
       { text: "Actions", value: "actions", sortable: false },
     ],
     items: [],
@@ -225,7 +306,7 @@ export default {
       amount: 0,
       currency_id: 1,
       payment_source_id: 1,
-      tipo_poliza_id: 1,
+      tipo_poliza_id: 2,
       category_id: null,
       // origen_bank_accounts_id: null,
       apply_bank_accounts_id: null,
@@ -243,7 +324,7 @@ export default {
       amount: 0,
       currency_id: 1,
       payment_source_id: 1,
-      tipo_poliza_id: 1,
+      tipo_poliza_id: 2,
       category_id: null,
       // origen_bank_accounts_id: null,
       apply_bank_accounts_id: null,
@@ -285,7 +366,7 @@ export default {
       const _this = this;
 
       let params = {
-        tipo_poliza: "ingreso",
+        tipo_poliza: "egreso",
         page: _this.pagination.page,
         per_page: _this.pagination.itemsPerPage,
       };
@@ -295,8 +376,8 @@ export default {
           data: { data, message },
         } = await axios.get("/admin/polizas", { params });
         _this.items = data.data;
-        _this.totalItems = data.data.total;
-        _this.pagination.totalItems = data.data.total;
+        _this.totalItems = data.total;
+        _this.pagination.totalItems = data.total;
 
         _this.$store.commit("showSnackbar", {
           message: message,
@@ -331,6 +412,23 @@ export default {
         await axios.delete(`/admin/polizas/${_this.editedIndex}`);
       } catch (error) {}
       this.closeDelete();
+      this.initialize();
+    },
+
+    async applyItemConfirm() {
+      const _this = this;
+      try {
+        await axios.put(`/admin/polizas/${_this.editedIndex}/apply`);
+      } catch (error) {}
+      this.closeApply();
+      this.initialize();
+    },
+    async unapplyItemConfirm() {
+      const _this = this;
+      try {
+        await axios.put(`/admin/polizas/${_this.editedIndex}/unapply`);
+      } catch (error) {}
+      this.closeUnapply();
       this.initialize();
     },
 
@@ -370,6 +468,33 @@ export default {
       }
       this.close();
       this.initialize();
+    },
+
+    closeApply() {
+      this.dialogApply = false;
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      });
+    },
+    closeUnapply() {
+      this.dialogUnapply = false;
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      });
+    },
+
+
+    applyItem(item) {
+      this.editedIndex = item.id;
+      this.editedItem = Object.assign({}, item);
+      this.dialogApply = true;
+    },
+    unapplyItem(item) {
+      this.editedIndex = item.id;
+      this.editedItem = Object.assign({}, item);
+      this.dialogUnapply = true;
     },
     async getOptions() {
       const _this = this;

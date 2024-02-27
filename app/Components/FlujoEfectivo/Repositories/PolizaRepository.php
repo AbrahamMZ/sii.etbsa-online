@@ -10,6 +10,7 @@ use App\Components\FlujoEfectivo\Models\PaymentSource;
 use App\Components\FlujoEfectivo\Models\Poliza;
 use App\Components\FlujoEfectivo\Models\TipoPoliza;
 use App\Components\Product\Models\ProductCategory;
+use Auth;
 
 class PolizaRepository extends BaseRepository
 {
@@ -37,11 +38,16 @@ class PolizaRepository extends BaseRepository
             'updatedUser',
         ], function ($query) use ($params) {
 
+            $query->filter($params);
+
             $query->when($params['unidentified'] ?? null, function ($query, $unidentified) {
-                $query->unidentified();
+                $unidentified == "unidentified" ? $query->unidentified() : $query->identified();
             });
 
+            $query->filterPermission(Auth::user());
+
             return $query;
+
         });
     }
 

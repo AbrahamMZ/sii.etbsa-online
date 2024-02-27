@@ -16,22 +16,6 @@
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
 
-        <v-select
-          v-model="filters.payment_sources"
-          label="Forma Pago"
-          :items="options.payment_sources"
-          item-text="title"
-          item-value="id"
-          chips
-          small-chips
-          deletable-chips
-          clearable
-          hide-details
-          multiple
-          outlined
-          dense
-        ></v-select>
-
         <v-text-field
           label="Buscar"
           class="mr-1"
@@ -41,11 +25,11 @@
         ></v-text-field>
 
         <v-dialog v-model="dialog" max-width="600px">
-          <!-- <template v-slot:activator="{ on, attrs }">
+          <template v-slot:activator="{ on, attrs }">
             <v-btn color="primary" dark v-bind="attrs" v-on="on">
-              Registrar Ingreso
+              Registrar {{ propTipoPoliza }}
             </v-btn>
-          </template> -->
+          </template>
           <v-card>
             <v-card-title>
               <span class="text-h5">{{ formTitle }}</span>
@@ -56,11 +40,22 @@
                 <v-row>
                   <v-col cols="12">
                     <v-select
+                      v-model.number="editedItem.origen_bank_accounts_id"
+                      :items="options.agency_bank_accounts"
+                      item-value="id"
+                      item-text="bank_name"
+                      label="Cuenta de Origen"
+                      outlined
+                      dense
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-select
                       v-model.number="editedItem.apply_bank_accounts_id"
                       :items="options.agency_bank_accounts"
                       item-value="id"
                       item-text="bank_name"
-                      label="Cuenta de Sucursal"
+                      label="Cuenta de Destino"
                       outlined
                       dense
                     ></v-select>
@@ -97,7 +92,7 @@
                       dense
                     ></v-select>
                   </v-col>
-                  <v-col cols="12" md="6">
+                  <!-- <v-col cols="12" md="6"> 
                     <v-select
                       v-model.number="editedItem.category_id"
                       :items="options.category"
@@ -135,7 +130,7 @@
                       outlined
                       dense
                     ></v-text-field>
-                  </v-col>
+                  </v-col> -->
                   <v-col cols="12">
                     <v-textarea
                       v-model="editedItem.description"
@@ -213,10 +208,7 @@
       </v-toolbar>
     </template>
     <template v-slot:[`item.amount`]="{ item, value }">
-      {{ value | money }} {{ item?.currency?.name }}
-    </template>
-    <template v-slot:[`item.unidentified`]="{ value }">
-      <v-icon :color="value ? 'red' : 'primary'"> mdi-information </v-icon>
+      {{ value | money }} - {{ item?.currency?.name }}
     </template>
     <template v-slot:[`item.is_applied`]="{ item, value }">
       <v-icon
@@ -226,18 +218,12 @@
         mdi-check-circle
       </v-icon>
     </template>
+
     <template v-slot:[`item.created_at`]="{ value }">
       {{ $appFormatters.formatDate(value) }}
     </template>
     <template v-slot:[`item.actions`]="{ item }">
-      <v-icon
-        v-if="!item.is_applied"
-        small
-        class="mr-2"
-        @click="editItem(item)"
-      >
-        mdi-pencil
-      </v-icon>
+      <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
       <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
     </template>
     <!-- <template v-slot:no-data>
@@ -250,18 +236,6 @@
           <template v-slot:default>
             <tbody>
               <tr>
-                <td>Cliente Numero:</td>
-                <td>{{ item.reference_number }}</td>
-              </tr>
-              <tr>
-                <td>Cliente Nombre:</td>
-                <td>{{ item.reference_name }}</td>
-              </tr>
-              <tr>
-                <td>Referencia:</td>
-                <td>{{ item.reference_concept }}</td>
-              </tr>
-              <tr>
                 <td>Descripcion:</td>
                 <td>{{ item.description }}</td>
               </tr>
@@ -269,27 +243,14 @@
           </template>
         </v-simple-table>
       </td>
-      <!-- <td colspan="4">
-        <v-textarea
-          filled
-          label="Notas"
-          rows="2"
-          shaped
-          counter="200"
-          no-resize
-          class="pt-2"
-        ></v-textarea>
-      </td> -->
+    
     </template>
   </v-data-table>
 </template>
 
 <script>
 export default {
-  props: {
-    propTipoPoliza: { require: true },
-    unidentified: { type: Boolean, require: false, default: false },
-  },
+  props: ["propTipoPoliza"],
   data: () => ({
     dialog: false,
     expanded: [],
@@ -298,18 +259,24 @@ export default {
     dialogUnapply: false,
     headers: [
       {
-        text: "Cuenta Afectada",
+        text: "Cuenta Origen",
+        align: "start",
+        sortable: false,
+        value: "origen_agency_bank_account.bank_name",
+      },
+      {
+        text: "Cuenta Destino",
         align: "start",
         sortable: false,
         value: "apply_agency_bank_account.bank_name",
       },
-      { text: "Forma PAgo", value: "payment_source.title" },
+      { text: "Forma Pago", value: "payment_source.title" },
       { text: "Importe", value: "amount" },
-      { text: "Categoria", value: "category.name" },
+      // { text: "Categoria", value: "category.name" },
       { text: "Fecha Registro", value: "created_at" },
       { text: "Usuario Registro", value: "created_user.name" },
-      { text: "Identicado", value: "unidentified" },
       { text: "Aplicado", value: "is_applied" },
+
       { text: "Actions", value: "actions", sortable: false },
     ],
     items: [],
@@ -318,9 +285,6 @@ export default {
       currencies: [],
       payment_sources: [],
       category: [],
-    },
-    filters: {
-      payment_sources: [],
     },
     pagination: {
       itemsPerPage: 10,
@@ -337,9 +301,9 @@ export default {
       amount: 0,
       currency_id: 1,
       payment_source_id: 1,
-      tipo_poliza_id: 1,
+      tipo_poliza_id: 3,
       category_id: null,
-      // origen_bank_accounts_id: null,
+      origen_bank_accounts_id: null,
       apply_bank_accounts_id: null,
       is_applied: false,
       // apply_date: null,
@@ -355,9 +319,9 @@ export default {
       amount: 0,
       currency_id: 1,
       payment_source_id: 1,
-      tipo_poliza_id: 1,
+      tipo_poliza_id: 3,
       category_id: null,
-      // origen_bank_accounts_id: null,
+      origen_bank_accounts_id: null,
       apply_bank_accounts_id: null,
       is_applied: false,
       // apply_date: null,
@@ -385,16 +349,10 @@ export default {
       }, 700),
       deep: true,
     },
-    unidentified: {
-      handler: _.debounce(function (v) {
-        this.initialize(() => {});
-      }, 700),
-      deep: true,
-    },
   },
 
   mounted() {
-    // this.initialize();
+    this.initialize();
     this.getOptions();
   },
 
@@ -403,9 +361,7 @@ export default {
       const _this = this;
 
       let params = {
-        ..._this.filters,
-        tipo_poliza: "ingreso",
-        unidentified: _this.unidentified ? "unidentified" : "identified",
+        tipo_poliza: "transferencia",
         page: _this.pagination.page,
         per_page: _this.pagination.itemsPerPage,
       };
@@ -443,25 +399,17 @@ export default {
       this.editedItem = Object.assign({}, item);
       this.dialogDelete = true;
     },
-    applyItem(item) {
-      this.editedIndex = item.id;
-      this.editedItem = Object.assign({}, item);
-      this.dialogApply = true;
-    },
-    unapplyItem(item) {
-      this.editedIndex = item.id;
-      this.editedItem = Object.assign({}, item);
-      this.dialogUnapply = true;
-    },
 
     async deleteItemConfirm() {
       const _this = this;
       try {
+        console.log("DELETE", _this.editedIndex);
         await axios.delete(`/admin/polizas/${_this.editedIndex}`);
       } catch (error) {}
       this.closeDelete();
       this.initialize();
     },
+
     async applyItemConfirm() {
       const _this = this;
       try {
@@ -494,20 +442,6 @@ export default {
         this.editedIndex = -1;
       });
     },
-    closeApply() {
-      this.dialogApply = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
-    closeUnapply() {
-      this.dialogUnapply = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
 
     async save() {
       const _this = this;
@@ -529,6 +463,32 @@ export default {
       }
       this.close();
       this.initialize();
+    },
+
+    closeApply() {
+      this.dialogApply = false;
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      });
+    },
+    closeUnapply() {
+      this.dialogUnapply = false;
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      });
+    },
+
+    applyItem(item) {
+      this.editedIndex = item.id;
+      this.editedItem = Object.assign({}, item);
+      this.dialogApply = true;
+    },
+    unapplyItem(item) {
+      this.editedIndex = item.id;
+      this.editedItem = Object.assign({}, item);
+      this.dialogUnapply = true;
     },
     async getOptions() {
       const _this = this;

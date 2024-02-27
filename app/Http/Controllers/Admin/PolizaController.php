@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Components\FlujoEfectivo\Models\Poliza;
 use App\Components\FlujoEfectivo\Repositories\PolizaRepository;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Ramsey\Uuid\Uuid;
 
 class PolizaController extends AdminController
 {
@@ -100,6 +102,35 @@ class PolizaController extends AdminController
         $poliza = $this->polizaRepository->update($poliza->id, $request->all());
 
         return $this->sendResponseUpdated(compact('poliza'));
+    }
+
+    public function apply(Request $request, Poliza $poliza)
+    {
+
+        $payload = [
+            'user_updated' => auth()->user()->id,
+            'is_applied' => true,
+            'apply_date' => Carbon::now(),
+            'external_id' => Uuid::uuid4()->toString()
+        ];
+        $poliza = $this->polizaRepository->update($poliza->id, $payload);
+
+        return $this->sendResponseUpdated(compact('poliza'));
+
+    }
+    public function unapply(Request $request, Poliza $poliza)
+    {
+
+        $payload = [
+            'user_updated' => auth()->user()->id,
+            'is_applied' => false,
+            'apply_date' => null,
+            'external_id' => null
+        ];
+        $poliza = $this->polizaRepository->update($poliza->id, $payload);
+
+        return $this->sendResponseUpdated(compact('poliza'));
+
     }
 
     /**

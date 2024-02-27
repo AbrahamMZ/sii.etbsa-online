@@ -12,7 +12,7 @@ export const flujo_efectivo = [
       {
         path: "create",
         name: "poliza.ingresos.create",
-        props: () => ({ propTipoPoliza: "ingresos" }),
+        props: () => ({ propTipoPoliza: "ingresos", unidentified: false }),
         component: require("@admin/FlujoEfectivo/PolizaIngresos/Create")
           .default,
       },
@@ -34,8 +34,9 @@ export const flujo_efectivo = [
       {
         path: "transferencias",
         name: "poliza.tranferencias.list",
-        props: () => ({ propTipoPoliza: "Tranferencias" }),
-        component: require("@admin/FlujoEfectivo/PolizaEgresos/Index").default,
+        props: () => ({ propTipoPoliza: "Transferencias" }),
+        component: require("@admin/FlujoEfectivo/PolizaTransferencias/Index")
+          .default,
       },
     ],
   },
