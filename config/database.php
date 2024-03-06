@@ -49,6 +49,11 @@ return [
             'database' => database_path('EquipDB.db3'),
             'prefix' => '',
         ],
+        'sqlite_activity_logs' => [
+            'driver' => 'sqlite',
+            'database' => database_path('etbsamx_logs.db3'),
+            'prefix' => '',
+        ],
 
         'mysql' => [
             'driver' => 'mysql',

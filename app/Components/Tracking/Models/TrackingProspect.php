@@ -10,9 +10,12 @@ use Illuminate\Database\Eloquent\Model;
 use App\Components\Core\Utilities\Helpers;
 use App\Components\Customers\Models\Customers;
 use Illuminate\Support\Facades\DB;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class TrackingProspect extends Model
 {
+
+    use LogsActivity;
     protected $table = 'tracking_prospect';
     protected $primaryKey = 'id';
 
@@ -43,6 +46,9 @@ class TrackingProspect extends Model
         'date_won_sale',
         'date_invoice'
     ];
+
+    protected static $logAttributes = ['estatus.title', 'assigned.name','attended.name'];
+
     protected $appends = ['amount'];
     protected $with = ['registered', 'assigned', 'prospect'];
 
